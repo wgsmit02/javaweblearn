@@ -1,0 +1,25 @@
+services:
+
+  taskmanager-api:
+    build:
+      context: ../backend        # path to the Dockerfile
+      dockerfile: Dockerfile
+    container_name: taskmanager-api
+    ports:
+      - "8082:8080"              # host:container (8080 in use by searxng)
+    environment:
+      # Override application.properties values with environment variables.
+      # Spring Boot automatically maps SPRING_DATASOURCE_URL → spring.datasource.url
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskmanager
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: Nashville2025
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    networks:
+      - local-ai-network         # join the existing network where Postgres lives
+    restart: unless-stopped
+
+# We declare the network as external — Docker Compose won't create or destroy it,
+# it just attaches our container to the already-running network.
+networks:
+  local-ai-network:
+    external: true
