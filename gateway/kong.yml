@@ -1,0 +1,84 @@
+# Kong Declarative Configuration (DB-less mode)
+# Kong reads this file at startup and configures itself from it.
+# No database required — the entire gateway config lives here.
+
+_format_version: "3.0"
+_transform: true
+
+# ============================================================
+# SERVICES
+# A Service represents an upstream API that Kong routes to.
+# Kong will forward matching requests to this URL.
+# Note: we use the Docker container name "taskmanager-api" as the host
+# because both Kong and the API are on the same Docker network.
+# ============================================================
+services:
+  - name: taskmanager-service
+    url: http://taskmanager-api:8080
+    connect_timeout: 10000   # ms to wait for a connection
+    read_timeout: 30000      # ms to wait for a response
+    write_timeout: 30000
+
+    # ============================================================
+    # ROUTES
+    # A Route defines what incoming requests match this Service.
+    # This route matches anything starting with /api/
+    # ============================================================
+    routes:
+      - name: taskmanager-route
+        paths:
+          - /api
+        strip_path: false    # keep /api in the path when forwarding to the backend
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+
+    # ============================================================
+    # PLUGINS (applied to this Service — all its routes inherit them)
+    # ============================================================
+    plugins:
+
+      # Rate Limiting — protect the API from being overwhelmed
+      # Limits each client IP to 100 requests per minute
+      - name: rate-limiting
+        config:
+          minute: 100
+          policy: local          # "local" = each Kong node tracks independently (fine for single node)
+          error_message: "Rate limit exceeded. Please slow down."
+
+      # CORS — allow the React frontend (on a different port) to call the API
+      # We'll tighten the origins when we know the frontend URL
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+          max_age: 3600
+
+      # Request Size Limiting — reject payloads over 1MB
+      - name: request-size-limiting
+        config:
+          allowed_payload_size: 1
+
+      # Correlation ID — Kong injects a unique ID into every request header.
+      # Your Spring Boot logs will include this ID, making it easy to trace
+      # a single request across Kong logs and API logs.
+      - name: correlation-id
+        config:
+          header_name: X-Request-ID
+          generator: uuid
+          echo_downstream: true   # also send the ID back in the response
