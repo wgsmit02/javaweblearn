@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        parent: We inherit from Spring Boot's parent POM.
+        This gives us sensible defaults and manages dependency versions
+        so we don't have to specify versions for every Spring library.
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/>
+    </parent>
+
+    <!-- Who we are -->
+    <groupId>com.taskmanager</groupId>
+    <artifactId>taskmanager-api</artifactId>
+    <version>1.0.0</version>
+    <name>Task Manager API</name>
+    <description>REST API for the Task Manager application</description>
+
+    <properties>
+        <java.version>21</java.version>
+    </properties>
+
+    <dependencies>
+
+        <!--
+            spring-boot-starter-web: Gives us everything needed to build REST APIs.
+            Includes an embedded Tomcat server — no need to install a separate web server.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            spring-boot-starter-data-jpa: Java Persistence API.
+            Lets us talk to the database using Java objects instead of raw SQL.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            postgresql: The JDBC driver — the "translator" that lets
+            Java communicate with a PostgreSQL database.
+        -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            spring-boot-starter-validation: Lets us validate incoming request data
+            with simple annotations like @NotNull, @Size, @Email.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!--
+            spring-boot-starter-test: Testing framework (JUnit 5, Mockito).
+            scope=test means this is only used when running tests, not in production.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+                spring-boot-maven-plugin: Adds the `mvn spring-boot:run` command
+                and packages your app as a self-contained executable JAR.
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

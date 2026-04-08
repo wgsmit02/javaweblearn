@@ -1,0 +1,25 @@
+# Maven
+backend/target/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+
+# Node / React (created later)
+frontend/node_modules/
+frontend/dist/
+
+# Environment files — never commit secrets
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven wrapper (we're using system Maven)
+.mvn/
+mvnw
+mvnw.cmd
