@@ -30,6 +30,23 @@ services:
       timeout: 10s
       retries: 3
 
+  # ============================================================
+  # React Frontend (Nginx)
+  # Serves the built React app and proxies /api to Kong
+  # ============================================================
+  taskmanager-frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: taskmanager-frontend
+    ports:
+      - "8090:80"
+    networks:
+      - local-ai-network
+    restart: unless-stopped
+    depends_on:
+      - kong
+
   taskmanager-api:
     build:
       context: ../backend        # path to the Dockerfile
@@ -38,6 +55,7 @@ services:
     ports:
       - "8082:8080"              # still exposed directly for debugging — Kong is the main entry point
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskmanager
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: Nashville2025
